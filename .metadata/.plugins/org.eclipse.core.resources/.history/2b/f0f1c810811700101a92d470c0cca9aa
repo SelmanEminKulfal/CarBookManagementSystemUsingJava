@@ -1,0 +1,121 @@
+package com.sellandrent.service_tier;
+
+import com.sellandrent.model_tier.Customer;
+import com.sellandrent.repository_tier.Customer_Repository;
+import com.sellandrent.DatabaseConnectionPool; // Import Connection Pool
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+
+public class CustomerService {
+    private Customer_Repository customerRepository;
+
+    public CustomerService() {
+        customerRepository = new Customer_Repository(); // Repository artık bağlantıyı kendisi almayacak
+    }
+
+    public Customer getCustomerById(int id) {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+            customerRepository.setConnection(connection); // Bağlantıyı Repository'ye ilet
+            return customerRepository.getCustomerById(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection); // Bağlantıyı kapat
+        }
+    }
+
+    public Customer getCustomerByEmail(String email) {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+             customerRepository.setConnection(connection);
+            return customerRepository.getCustomerByEmail(email);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection);
+        }
+    }
+
+    public List<Customer> getAllCustomers() {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+             customerRepository.setConnection(connection);
+            return customerRepository.getAllCustomers();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection);
+        }
+    }
+
+    public boolean addCustomer(Customer customer) {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+             customerRepository.setConnection(connection);
+            return customerRepository.addCustomer(customer);
+        } catch (SQLException e) {
+            System.err.println("Veritabanı kayıt hatası: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection);
+        }
+    }
+
+    public void updateCustomer(Customer customer) {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+             customerRepository.setConnection(connection);
+            customerRepository.updateCustomer(customer);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection);
+        }
+    }
+
+    public boolean deleteCustomer(int customerId) {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+             customerRepository.setConnection(connection);
+            return customerRepository.deleteCustomer(customerId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection);
+        }
+    }
+
+    public boolean changePassword(int customerId, String oldPassword, String newPassword) {
+        Connection connection = null;
+        try {
+            connection = DatabaseConnectionPool.getConnection();
+             customerRepository.setConnection(connection);
+            Customer customer = customerRepository.getCustomerById(customerId);
+            if (customer != null && customer.getPassword().equals(oldPassword)) { // Güvenlik için hash karşılaştırması yapılmalı
+                customer.setPassword(newPassword); // Yeni şifreyi hashleyerek kaydetmelisiniz
+                customerRepository.updateCustomer(customer);
+                return true;
+            }
+            return false;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            DatabaseConnectionPool.closeConnection(connection);
+        }
+    }
+}

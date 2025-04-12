@@ -1,0 +1,61 @@
+package com.sellandrent.web;
+
+import com.sellandrent.model_tier.Customer;
+import com.sellandrent.service_tier.CustomerService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+
+@WebServlet("/delete-account")
+public class DeleteAccountServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private CustomerService customerService;
+
+    @Override
+    public void init() throws ServletException {
+        customerService = new CustomerService();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loggedInUser") != null) {
+            request.getRequestDispatcher("delete-account.jsp").forward(request, response); // Onay sayfası
+        } else {
+            response.sendRedirect("login.jsp");
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loggedInUser") != null) {
+            Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+            String confirmation = request.getParameter("confirmation");
+
+            if (confirmation != null && confirmation.equals("onay")) {
+                boolean deleted = customerService.deleteCustomer(loggedInUser.getId());
+                if (deleted) {
+                    session.invalidate(); // Oturumu sonlandır
+                    response.sendRedirect("mainPage.jsp"); // Başarı sayfasına yönlendirme
+                } else {
+                    request.setAttribute("error", "Hesap silinirken bir hata oluştu.");
+                    request.getRequestDispatcher("delete-account.jsp").forward(request, response);
+                }
+            } else {
+                request.setAttribute("error", "Hesabı silmek için onaylamanız gerekmektedir.");
+                request.getRequestDispatcher("delete-account.jsp").forward(request, response);
+            }
+        } else {
+            response.sendRedirect("login.jsp");
+        }
+    }
+
+    @Override
+    public void destroy() {
+        
+    }
+}

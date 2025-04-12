@@ -1,0 +1,5 @@
+package com.sellandrent;
+
+public class DatabaseConnectionPool {
+
+}

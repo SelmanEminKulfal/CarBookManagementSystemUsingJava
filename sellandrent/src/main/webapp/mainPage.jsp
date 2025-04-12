@@ -1,0 +1,85 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sell&Rent main page</title>
+<link rel="stylesheet" href="css/style.css">
+<style type="text/css">
+	.navbar {
+    	display: flex;
+    	justify-content: space-between;
+    	align-items: center;
+    	background-color: rgb(0, 0, 0);
+    	padding: 10px 20px;
+	}
+
+	.navbar-left .navbar-logo {
+	    font-size: 32px;
+	    font-weight: bold;
+	    text-decoration: none;
+	    color: red;
+	}
+
+	.navbar-right .navbar-button {
+	    margin-left: 10px;
+	    padding: 8px 16px;
+	    background-color: green;
+	    color: blue;
+	    text-decoration: none;
+	    border-radius: 4px;
+	}
+	.content {
+    	background-image: url('images/lamborghini-autentica.jpg');
+    	background-size: cover; /* Resmi içeriğe sığdır */
+        background-position: center; /* Resmi ortala */
+        color: white; /* Yazı rengi */
+        padding: 100px; /* İç boşluk, yazının etrafında boşluk oluşturur */
+        text-align: center; /* Yazıyı ortala */
+        font-size: 24px;
+        height: 1500px;
+	}
+	.content-text {
+        background-color: rgba(0, 0, 0, 0.5); 
+        padding: 20px;
+        border-radius: 10px;
+        margin: 0 auto;
+        max-width: 100%; 
+     }
+</style>
+</head>
+<body>
+	<nav class="navbar">
+        <div class="navbar-left">
+            <a href="mainPage.jsp" class="navbar-logo">Sell&Rent</a>
+        </div>
+        <div class="navbar-right">
+            <% if (session.getAttribute("loggedInUser") == null) { %>
+                <a href="register.jsp" class="navbar-button">Register</a>
+                <a href="login.jsp" class="navbar-button">Login</a>
+            <% } else { %>
+                <span style="margin-right: 10px; font-weight: bold;">
+                    <% if (session.getAttribute("loggedInUser") != null) { %>
+                        Hoş geldiniz, <%= ((com.sellandrent.model_tier.Customer) session.getAttribute("loggedInUser")).getName() %>
+                    <% } %>
+                </span>
+                <a href="user-panel.jsp" class="navbar-button">Kullanıcı Paneli</a>
+                <a href="logout.jsp" class="navbar-button" style="background-color: #d9534f;">Logout</a>
+            <% } %>
+        </div>
+    </nav>
+    <div class="content">
+        <div class="content-text">
+            <h2>Sell&Rent ile Hayallerine Kavuş!</h2>
+            <p>
+                Sell&Rent, araç kiralama işlemlerinizi kolaylaştırmak için tasarlanmış yenilikçi bir platformdur. 
+                Geniş araç yelpazemiz arasından dilediğiniz aracı bulabilir, kendi aracınızı kolayca satışa çıkarabilir 
+                veya ihtiyacınız olan süre boyunca hayalinizdeki aracı kiralayabilirsiniz. 
+                Kullanıcı dostu arayüzümüz ile sorunsuz bir deneyim sunuyoruz. 
+                İster lüks bir spor otomobil hayal edin, ister pratik bir aile aracı arayın, 
+                Sell&Rent size en iyi seçenekleri sunar. Hemen keşfetmeye başlayın ve otomotiv dünyasının kapılarını aralayın!
+            </p>
+            </div>
+    </div>
+</body>
+</html>

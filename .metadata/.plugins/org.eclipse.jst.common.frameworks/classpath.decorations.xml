@@ -1,0 +1,7 @@
+<classpath>
+  <container id="sellandrent!org.eclipse.jst.j2ee.internal.web.container">
+    <entry id="C:/Users/selman/Desktop/websiteaboutcarrent/sellandrent/src/main/webapp/WEB-INF/lib/jakarta.servlet-api-5.0.0.jar">
+      <source-attachment-path>/sellandrent/src/main/webapp/WEB-INF/lib/jakarta.servlet-api-5.0.0.jar</source-attachment-path>
+    </entry>
+  </container>
+</classpath>

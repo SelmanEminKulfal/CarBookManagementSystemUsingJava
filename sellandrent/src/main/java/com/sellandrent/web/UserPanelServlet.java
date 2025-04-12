@@ -1,0 +1,24 @@
+package com.sellandrent.web;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;  
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;  
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import com.sellandrent.model_tier.Customer; 
+
+@WebServlet("/user-panel")
+public class UserPanelServlet extends HttpServlet {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loggedInUser") != null) {
+        	Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+        	request.setAttribute("loggedInUser", loggedInUser); // Kullanıcı bilgisini request'e ekle
+            request.getRequestDispatcher("user-panel.jsp").forward(request, response); // user.jsp'ye yönlendir
+        } else {
+            response.sendRedirect("login.jsp");
+        }
+    }
+}

@@ -1,0 +1,176 @@
+package com.sellandrent.repository_tier;
+
+import com.sellandrent.model_tier.Car;
+import com.sellandrent.model_tier.Motorcycle;
+import com.sellandrent.model_tier.Vehicle;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Vehicle_Repository {
+    private Connection connection;
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    private void close(AutoCloseable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Loglama eklenebilir
+            }
+        }
+    }
+
+    public Vehicle getVehicleById(int id) throws SQLException {
+        String query = "SELECT id, brand, model, year, type, doors, fuel, engine, sidecar FROM vehicles WHERE id = ?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String type = resultSet.getString("type");
+                int vehicleId = resultSet.getInt("id");
+                String brand = resultSet.getString("brand");
+                String model = resultSet.getString("model");
+                int year = resultSet.getInt("year");
+
+                if ("car".equalsIgnoreCase(type)) {
+                    int doors = resultSet.getInt("doors");
+                    String fuel = resultSet.getString("fuel");
+                    return new Car(vehicleId, brand, model, year, doors, fuel);
+                } else if ("motorcycle".equalsIgnoreCase(type)) {
+                    String engine = resultSet.getString("engine");
+                    boolean sidecar = resultSet.getBoolean("sidecar");
+                    return new Motorcycle(vehicleId, brand, model, year, engine, sidecar);
+                } else {
+                    return null;
+                }
+            }
+            return null;
+        } finally {
+            close(resultSet);
+            close(statement);
+        }
+    }
+
+    public List<Vehicle> getAllVehicles() throws SQLException {
+        String query = "SELECT id, brand, model, year, type, doors, fuel, engine, sidecar FROM vehicles";
+        Statement statement = null;
+        ResultSet resultSet = null;
+        List<Vehicle> vehicles = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                String type = resultSet.getString("type");
+                int vehicleId = resultSet.getInt("id");
+                String brand = resultSet.getString("brand");
+                String model = resultSet.getString("model");
+                int year = resultSet.getInt("year");
+
+                if ("car".equalsIgnoreCase(type)) {
+                    int doors = resultSet.getInt("doors");
+                    String fuel = resultSet.getString("fuel");
+                    vehicles.add(new Car(vehicleId, brand, model, year, doors, fuel));
+                } else if ("motorcycle".equalsIgnoreCase(type)) {
+                    String engine = resultSet.getString("engine");
+                    boolean sidecar = resultSet.getBoolean("sidecar");
+                    vehicles.add(new Motorcycle(vehicleId, brand, model, year, engine, sidecar));
+                }
+            }
+            return vehicles;
+        } finally {
+            close(resultSet);
+            close(statement);
+        }
+    }
+
+    public void addVehicle(Vehicle vehicle) throws SQLException {
+        String query = "";
+        PreparedStatement statement = null;
+
+        if (vehicle instanceof Car) {
+            Car car = (Car) vehicle;
+            query = "INSERT INTO vehicles (brand, model, year, type, doors, fuel) VALUES (?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, car.getBrand());
+            statement.setString(2, car.getModel());
+            statement.setInt(3, car.getYear());
+            statement.setString(4, "car");
+            statement.setInt(5, car.getNumberOfDoors());
+            statement.setString(6, car.getFuelType());
+        } else if (vehicle instanceof Motorcycle) {
+            Motorcycle motorcycle = (Motorcycle) vehicle;
+            query = "INSERT INTO vehicles (brand, model, year, type, engine, sidecar) VALUES (?, ?, ?, ?, ?, ?)";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, motorcycle.getBrand());
+            statement.setString(2, motorcycle.getModel());
+            statement.setInt(3, motorcycle.getYear());
+            statement.setString(4, "motorcycle");
+            statement.setString(5, motorcycle.getEngineType());
+            statement.setBoolean(6, motorcycle.getHasSidecar());
+        }
+
+        if (statement != null) {
+            statement.executeUpdate();
+        }
+    }
+
+    public void updateVehicle(Vehicle vehicle) throws SQLException {
+        String query = "";
+        PreparedStatement statement = null;
+
+        if (vehicle instanceof Car) {
+            Car car = (Car) vehicle;
+            query = "UPDATE vehicles SET brand = ?, model = ?, year = ?, type = ?, doors = ?, fuel = ? WHERE id = ?";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, car.getBrand());
+            statement.setString(2, car.getModel());
+            statement.setInt(3, car.getYear());
+            statement.setString(4, "car");
+            statement.setInt(5, car.getNumberOfDoors());
+            statement.setString(6, car.getFuelType());
+            statement.setInt(7, car.getId());
+        } else if (vehicle instanceof Motorcycle) {
+            Motorcycle motorcycle = (Motorcycle) vehicle;
+            query = "UPDATE vehicles SET brand = ?, model = ?, year = ?, type = ?, engine = ?, sidecar = ? WHERE id = ?";
+            statement = connection.prepareStatement(query);
+            statement.setString(1, motorcycle.getBrand());
+            statement.setString(2, motorcycle.getModel());
+            statement.setInt(3, motorcycle.getYear());
+            statement.setString(4, "motorcycle");
+            statement.setString(5, motorcycle.getEngineType());
+            statement.setBoolean(6, motorcycle.getHasSidecar());
+            statement.setInt(7, motorcycle.getId());
+        }
+
+        if (statement != null) {
+            statement.executeUpdate();
+        }
+    }
+
+    public void deleteVehicle(int id) throws SQLException {
+        String query = "DELETE FROM vehicles WHERE id = ?";
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } finally {
+            close(statement);
+        }
+    }
+}

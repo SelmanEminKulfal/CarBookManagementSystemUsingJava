@@ -1,0 +1,58 @@
+package com.sellandrent.web;
+
+import com.sellandrent.model_tier.Customer;
+import com.sellandrent.model_tier.Rent;
+import com.sellandrent.model_tier.Vehicle;
+import com.sellandrent.service_tier.RentService;
+import com.sellandrent.service_tier.VehicleService;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+@WebServlet("/rented-vehicles")
+public class RentedVehiclesServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private RentService rentService;
+    private VehicleService vehicleService;
+
+    @Override
+    public void init() throws ServletException {
+        rentService = new RentService();
+        vehicleService = new VehicleService();
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false); // Mevcut oturumu al, yoksa null dön
+        if (session != null && session.getAttribute("loggedInUser") != null) {
+            Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+            int customerId = loggedInUser.getId();
+
+            List<Rent> rents = rentService.getRentsByCustomerId(customerId);
+            List<Vehicle> rentedVehicles = new ArrayList<>();
+            for (Rent rent : rents) {
+                Vehicle vehicle = vehicleService.getVehicleById(rent.getVehicleId());
+                if (vehicle != null) {
+                    rentedVehicles.add(vehicle);
+                }
+            }
+
+            request.setAttribute("rentedVehicles", rentedVehicles);
+            request.getRequestDispatcher("rented-vehicles.jsp").forward(request, response);
+        } else {
+            // Kullanıcı giriş yapmamışsa yönlendirme
+            response.sendRedirect("login.jsp"); // Giriş sayfasına yönlendirme
+        }
+    }
+
+    @Override
+    public void destroy() {
+        
+    }
+}

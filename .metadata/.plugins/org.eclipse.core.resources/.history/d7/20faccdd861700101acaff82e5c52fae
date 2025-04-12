@@ -1,0 +1,157 @@
+package com.sellandrent.service_tier;
+
+import com.sellandrent.model_tier.Car;
+import com.sellandrent.model_tier.Motorcycle;
+import com.sellandrent.model_tier.Vehicle;
+import com.sellandrent.repository_tier.Vehicle_Repository;
+import com.sellandrent.DatabaseConnectionPool;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
+
+public class VehicleService {
+    private Vehicle_Repository vehicleRepository;
+
+    public VehicleService() {
+        vehicleRepository = new Vehicle_Repository();
+    }
+
+    private Connection getConnection() throws SQLException {
+        return DatabaseConnectionPool.getConnection();
+    }
+
+    private void closeConnection(Connection connection) {
+        DatabaseConnectionPool.closeConnection(connection);
+    }
+
+    public Vehicle getVehicleById(int id) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            vehicleRepository.setConnection(connection);
+            return vehicleRepository.getVehicleById(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            closeConnection(connection);
+        }
+    }
+
+    public List<Vehicle> getAllVehicles() {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            vehicleRepository.setConnection(connection);
+            return vehicleRepository.getAllVehicles();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            closeConnection(connection);
+        }
+    }
+
+    public void addVehicle(Vehicle vehicle) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            vehicleRepository.setConnection(connection);
+            vehicleRepository.addVehicle(vehicle);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(connection);
+        }
+    }
+
+    public void addVehicle(String brand, String model, int year, String type, Map<String, String> details) {
+        Vehicle vehicle = null;
+        if ("car".equalsIgnoreCase(type)) {
+            int doors = Integer.parseInt(details.get("doors"));
+            String fuel = details.get("fuel");
+            vehicle = new Car(0, brand, model, year, doors, fuel);
+        } else if ("motorcycle".equalsIgnoreCase(type)) {
+            String engine = details.get("engine");
+            boolean sidecar = Boolean.parseBoolean(details.get("sidecar"));
+            vehicle = new Motorcycle(0, brand, model, year, engine, sidecar);
+        }
+
+        if (vehicle != null) {
+            Connection connection = null;
+            try {
+                connection = getConnection();
+                vehicleRepository.setConnection(connection);
+                vehicleRepository.addVehicle(vehicle);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                closeConnection(connection);
+            }
+        }
+    }
+
+    public void updateVehicle(Vehicle vehicle) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            vehicleRepository.setConnection(connection);
+            vehicleRepository.updateVehicle(vehicle);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(connection);
+        }
+    }
+
+    public void updateVehicle(int id, String brand, String model, int year, String type, Map<String, String> details) {
+        Vehicle existingVehicle = getVehicleById(id);
+        if (existingVehicle != null) {
+            existingVehicle.setBrand(brand);
+            existingVehicle.setModel(model);
+            existingVehicle.setYear(year);
+            if (existingVehicle instanceof Car) {
+                Car car = (Car) existingVehicle;
+                if (details.containsKey("doors")) {
+                    car.setNumberOfDoors(Integer.parseInt(details.get("doors")));
+                }
+                if (details.containsKey("fuel")) {
+                    car.setFuelType(details.get("fuel"));
+                }
+            } else if (existingVehicle instanceof Motorcycle) {
+                Motorcycle motorcycle = (Motorcycle) existingVehicle;
+                if (details.containsKey("engine")) {
+                    motorcycle.setEngineType(details.get("engine"));
+                }
+                if (details.containsKey("sidecar")) {
+                    motorcycle.setHasSidecar(Boolean.parseBoolean(details.get("sidecar")));
+                }
+            }
+            Connection connection = null;
+            try {
+                connection = getConnection();
+                vehicleRepository.setConnection(connection);
+                updateVehicle(existingVehicle);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                closeConnection(connection);
+            }
+        }
+    }
+
+    public void deleteVehicle(int id) {
+        Connection connection = null;
+        try {
+            connection = getConnection();
+            vehicleRepository.setConnection(connection);
+            vehicleRepository.deleteVehicle(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(connection);
+        }
+    }
+}

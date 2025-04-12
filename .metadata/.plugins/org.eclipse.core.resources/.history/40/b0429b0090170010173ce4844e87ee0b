@@ -1,0 +1,78 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Sell&Rent main page</title>
+<link rel="stylesheet" href="css/style.css">
+<style type="text/css">
+	.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: rgb(255, 255, 255);
+    padding: 10px 20px;
+	}
+
+	.navbar-left .navbar-logo {
+	    font-size: 24px;
+	    font-weight: bold;
+	    text-decoration: none;
+	    color: #333;
+	}
+
+	.navbar-right .navbar-button {
+	    margin-left: 10px;
+	    padding: 8px 16px;
+	    background-color: #4CAF50;
+	    color: white;
+	    text-decoration: none;
+	    border-radius: 4px;
+	}
+	.content {
+    	background-image: url('images/lamborghini-autentica.jpg');
+    	background-size: cover; /* Resmi içeriğe sığdır */
+        background-position: center; /* Resmi ortala */
+        color: white; /* Yazı rengi */
+        padding: 100px; /* İç boşluk, yazının etrafında boşluk oluşturur */
+        text-align: center; /* Yazıyı ortala */
+	}
+	.content-text {
+            background-color: rgba(0, 0, 0, 0.5); /* Yazının okunabilirliği için yarı saydam siyah arka plan */
+            padding: 20px;
+            border-radius: 10px;
+            margin: 0 auto; /* Yatayda ortala */
+            max-width: 80%; /* Yazı alanının maksimum genişliği */
+     }
+</style>
+</head>
+<body>
+	<nav class="navbar">
+        <div class="navbar-left">
+            <a href="#" class="navbar-logo">Sell&Rent</a>
+        </div>
+        <div class="navbar-right">
+            <% if (session.getAttribute("loggedInUser") == null) { %>
+                <a href="register.jsp" class="navbar-button">Register</a>
+                <a href="login.jsp" class="navbar-button">Login</a>
+            <% } else { %>
+                <span style="margin-right: 10px; font-weight: bold;">
+                    <% if (session.getAttribute("loggedInUser") != null) { %>
+                        Hoş geldiniz, <%= ((com.sellandrent.model_tier.Customer) session.getAttribute("loggedInUser")).getName() %>
+                    <% } %>
+                </span>
+                <a href="user-panel.jsp" class="navbar-button">Kullanıcı Paneli</a>
+                <a href="logout.jsp" class="navbar-button" style="background-color: #d9534f;">Logout</a>
+            <% } %>
+        </div>
+    </nav>
+    <div class="content">
+        <div class="content-text">
+            <h2>Sell&Book ile Hayallerine Kavuş!</h2>
+            <p>
+                Sell&Book, araç alım, satım ve kiralama işlemlerinizi kolaylaştırmak için tasarlanmış yenilikçi bir platformdur. Geniş araç yelpazemiz arasından dilediğiniz aracı bulabilir, kendi aracınızı kolayca satışa çıkarabilir veya ihtiyacınız olan süre boyunca hayalinizdeki aracı kiralayabilirsiniz. Kullanıcı dostu arayüzümüz ve güvenli ödeme sistemimiz ile sorunsuz bir deneyim sunuyoruz. İster lüks bir spor otomobil hayal edin, ister pratik bir aile aracı arayın, Sell&Book size en iyi seçenekleri sunar. Hemen keşfetmeye başlayın ve otomotiv dünyasının kapılarını aralayın!
+            </p>
+            </div>
+    </div>
+</body>
+</html>

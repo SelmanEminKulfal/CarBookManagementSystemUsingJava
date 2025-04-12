@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <Resource name="jdbc/RentDB"
+              auth="Container"
+              type="javax.sql.DataSource"
+              driverClassName="org.sqlite.JDBC"
+              url="jdbc:sqlite:C:\\Users\\selman\\Desktop\\websiteaboutcarrent\\sellandrent\\src\\main\\webapp\\WEB-INF\\db\\RentData.db"
+              maxActive="10"
+              maxIdle="5"
+              maxWait="-1"
+              removeAbandonedTimeout="60"
+              removeAbandoned="true"
+              logAbandoned="true"
+              validationQuery="SELECT 1"
+              testOnBorrow="true"/>
+</Context>

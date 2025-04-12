@@ -1,0 +1,84 @@
+package com.sellandrent.service_tier;
+
+import com.sellandrent.model_tier.Rent;
+import com.sellandrent.repository_tier.Rent_Repository;
+import com.sellandrent.DatabaseConnectionTest;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RentService {
+    private Rent_Repository rent_repository;
+    private Connection connection;
+
+    public RentService() {
+        try {
+            connection = DatabaseConnectionTest.createConnection();
+            rent_repository = new Rent_Repository(connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Rent getRentById(int id) {
+        try {
+            return rent_repository.getRentById(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public List<Rent> getAllRents() {
+        try {
+            return rent_repository.getAllRents();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public void addRent(Rent rent) {
+        try {
+        	rent_repository.addRent(rent);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateRent(Rent rent) {
+        try {
+        	rent_repository.updateRent(rent);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void deleteRent(int id) {
+        try {
+        	rent_repository.deleteRent(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    public List<Rent> getRentsByCustomerId(int customerId) {
+        try {
+            return rent_repository.getRentsByCustomerId(customerId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        }
+    }
+}

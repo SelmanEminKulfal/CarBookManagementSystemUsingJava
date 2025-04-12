@@ -1,0 +1,151 @@
+package com.sellandrent.repository_tier;
+
+import com.sellandrent.model_tier.Rent;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Rent_Repository {
+    private Connection connection;
+
+    public Rent_Repository(Connection connection) {
+        this.connection = connection;
+    }
+
+    private void close(AutoCloseable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                // Loglama eklenebilir
+            }
+        }
+    }
+
+    public Rent getRentById(int id) throws SQLException {
+        String query = "SELECT id, vehicle_id, customer_id, start_date, end_date FROM rents WHERE id = ?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                Rent rent = new Rent();
+                rent.setId(resultSet.getInt("id"));
+                rent.setVehicleId(resultSet.getInt("vehicle_id"));
+                rent.setCustomerId(resultSet.getInt("customer_id"));
+                rent.setStartDate(resultSet.getDate("start_date"));
+                rent.setEndDate(resultSet.getDate("end_date"));
+                return rent;
+            }
+            return null;
+        } finally {
+            close(resultSet);
+            close(statement);
+            // Bağlantıyı burada kapatmıyoruz, RentService yönetiyor
+        }
+    }
+
+    public List<Rent> getAllRents() throws SQLException {
+        String query = "SELECT id, vehicle_id, customer_id, start_date, end_date FROM rents";
+        Statement statement = null;
+        ResultSet resultSet = null;
+        List<Rent> rents = new ArrayList<>();
+        try {
+            statement = connection.createStatement();
+            resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                Rent rent = new Rent();
+                rent.setId(resultSet.getInt("id"));
+                rent.setVehicleId(resultSet.getInt("vehicle_id"));
+                rent.setCustomerId(resultSet.getInt("customer_id"));
+                rent.setStartDate(resultSet.getDate("start_date"));
+                rent.setEndDate(resultSet.getDate("end_date"));
+                rents.add(rent);
+            }
+            return rents;
+        } finally {
+            close(resultSet);
+            close(statement);
+            // Bağlantıyı burada kapatmıyoruz, RentService yönetiyor
+        }
+    }
+
+    public void addRent(Rent rent) throws SQLException {
+        String query = "INSERT INTO rents (vehicle_id, customer_id, start_date, end_date) VALUES (?, ?, ?, ?)";
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, rent.getVehicleId());
+            statement.setInt(2, rent.getCustomerId());
+            statement.setDate(3, rent.getStartDate());
+            statement.setDate(4, rent.getEndDate());
+            statement.executeUpdate();
+        } finally {
+            close(statement);
+            // Bağlantıyı burada kapatmıyoruz, RentService yönetiyor
+        }
+    }
+
+    public void updateRent(Rent rent) throws SQLException {
+        String query = "UPDATE rents SET vehicle_id = ?, customer_id = ?, start_date = ?, end_date = ? WHERE id = ?";
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, rent.getVehicleId());
+            statement.setInt(2, rent.getCustomerId());
+            statement.setDate(3, rent.getStartDate());
+            statement.setDate(4, rent.getEndDate());
+            statement.setInt(5, rent.getId());
+            statement.executeUpdate();
+        } finally {
+            close(statement);
+            // Bağlantıyı burada kapatmıyoruz, RentService yönetiyor
+        }
+    }
+
+    public void deleteRent(int id) throws SQLException {
+        String query = "DELETE FROM rents WHERE id = ?";
+        PreparedStatement statement = null;
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, id);
+            statement.executeUpdate();
+        } finally {
+            close(statement);
+            // Bağlantıyı burada kapatmıyoruz, RentService yönetiyor
+        }
+    }
+
+    public List<Rent> getRentsByCustomerId(int customerId) throws SQLException {
+        String query = "SELECT id, vehicle_id, customer_id, start_date, end_date FROM rents WHERE customer_id = ?";
+        PreparedStatement statement = null;
+        ResultSet resultSet = null;
+        List<Rent> rents = new ArrayList<>();
+        try {
+            statement = connection.prepareStatement(query);
+            statement.setInt(1, customerId);
+            resultSet = statement.executeQuery();
+
+            while (resultSet.next()) {
+                Rent rent = new Rent();
+                rent.setId(resultSet.getInt("id"));
+                rent.setVehicleId(resultSet.getInt("vehicle_id"));
+                rent.setCustomerId(resultSet.getInt("customer_id"));
+                rent.setStartDate(resultSet.getDate("start_date"));
+                rent.setEndDate(resultSet.getDate("end_date"));
+                rents.add(rent);
+            }
+            return rents;
+        } finally {
+            close(resultSet);
+            close(statement);
+            // Bağlantıyı burada kapatmıyoruz, RentService yönetiyor
+        }
+    }
+}

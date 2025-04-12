@@ -1,0 +1,63 @@
+package com.sellandrent.web;
+
+import com.sellandrent.model_tier.Customer;
+import com.sellandrent.model_tier.Rent;
+import com.sellandrent.service_tier.RentService;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.sql.Date;
+import java.time.LocalDate;
+
+@WebServlet("/rent-process")
+public class RentProcessServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+    private RentService rentService;
+
+    @Override
+    public void init() throws ServletException {
+        rentService = new RentService();
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String vehicleIdStr = request.getParameter("vehicleId");
+        HttpSession session = request.getSession(false);
+        Customer loggedInUser = (Customer) session.getAttribute("loggedInUser");
+
+        if (vehicleIdStr != null && loggedInUser != null) {
+            try {
+                int vehicleId = Integer.parseInt(vehicleIdStr);
+
+                Rent newRent = new Rent();
+                newRent.setVehicleId(vehicleId);
+                newRent.setCustomerId(loggedInUser.getId());
+                newRent.setStartDate(Date.valueOf(LocalDate.now())); // Şu anki tarih başlangıç tarihi olarak ayarlandı.
+                newRent.setEndDate(Date.valueOf(LocalDate.now().plusDays(7))); // Varsayılan olarak 7 gün kiralama. Bu ayarlanabilir.
+                newRent.setTotalPrice(100.0); // Örnek bir fiyat. Gerçek fiyat hesaplaması yapılmalı.
+
+                rentService.addRent(newRent);
+
+                // İşlem başarılı mesajını bir request attribute'una ekleyebiliriz.
+                request.setAttribute("rentalSuccess", true);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+                request.setAttribute("rentalError", "Geçersiz araç ID'si.");
+            }
+        } else {
+            request.setAttribute("rentalError", "Araç ID'si veya kullanıcı bilgisi bulunamadı.");
+        }
+
+        // Kullanıcıyı tekrar araç kiralama sayfasına yönlendiriyoruz.
+        request.getRequestDispatcher("rent-a-car").forward(request, response);
+    }
+
+    @Override
+    public void destroy() {
+        rentService.closeConnection();
+    }
+}

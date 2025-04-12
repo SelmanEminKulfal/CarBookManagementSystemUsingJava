@@ -1,0 +1,31 @@
+package com.sellandrent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DatabaseConnectionTest {
+
+	private static final String URL = "jdbc:sqlite:RentData.db";
+
+    public static void main(String[] args) {
+        try {
+            Connection connection = createConnection();
+            if (connection != null) {
+                System.out.println("Veritabanı bağlantısı başarılı!");
+                connection.close();
+            }
+        } catch (SQLException e) {
+            System.err.println("Veritabanı bağlantısı hatası: " + e.getMessage());
+        }
+    }
+
+    public static Connection createConnection() throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+            return DriverManager.getConnection(URL);
+        } catch (ClassNotFoundException e) {
+            System.err.println("SQLite JDBC sürücüsü bulunamadı.");
+            return null;
+        }
+    }
+}

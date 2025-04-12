@@ -1,0 +1,8 @@
+INDEX VERSION 1.4+C:\Users\selman\Desktop\websiteaboutcarrent\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
+318567880.index
+884753113.index
+2131265350.index
+1044603899.index
+2270691380.index
+1212765916.index
+3497362418.index

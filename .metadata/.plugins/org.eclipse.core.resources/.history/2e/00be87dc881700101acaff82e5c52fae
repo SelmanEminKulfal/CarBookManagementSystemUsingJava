@@ -1,0 +1,70 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kiralanan Araçlar - Sell&Book</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .no-vehicles {
+            color: #777;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>Kiralanan Araçlar</h1>
+    <c:if test="${empty rentedVehicles}">
+        <p class="no-vehicles">Henüz kiraladığınız bir araç bulunmamaktadır.</p>
+    </c:if>
+    <c:if test="${!empty rentedVehicles}">
+        <table>
+            <thead>
+                <tr>
+                    <th>Marka</th>
+                    <th>Model</th>
+                    <th>Yıl</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="vehicle" items="${rentedVehicles}">
+                    <tr>
+                        <td><c:out value="${vehicle.brand}"/></td>
+                        <td><c:out value="${vehicle.model}"/></td>
+                        <td><c:out value="${vehicle.year}"/></td>
+                        
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </c:if>
+</body>
+</html>

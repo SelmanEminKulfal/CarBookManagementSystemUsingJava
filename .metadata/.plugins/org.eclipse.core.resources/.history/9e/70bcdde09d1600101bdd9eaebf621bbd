@@ -1,0 +1,109 @@
+package com.sellandrent.service_tier;
+
+import com.sellandrent.model_tier.Rent;
+import com.sellandrent.repository_tier.Rent_Repository;
+import com.sellandrent.DatabaseConnectionTest;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class RentService {
+    private Rent_Repository rent_repository;
+    private Connection connection;
+
+    // Bağlantıyı her işlem için açan yardımcı metot
+    private Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            connection = DatabaseConnectionTest.createConnection();
+        }
+        return connection;
+    }
+
+    public Rent getRentById(int id) {
+        try {
+            connection = getConnection(); // Bağlantıyı aç
+            rent_repository = new Rent_Repository(connection);
+            return rent_repository.getRentById(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            closeConnection(); // Bağlantıyı kapat
+        }
+    }
+
+    public List<Rent> getAllRents() {
+        try {
+            connection = getConnection(); // Bağlantıyı aç
+            rent_repository = new Rent_Repository(connection);
+            return rent_repository.getAllRents();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        } finally {
+            closeConnection(); // Bağlantıyı kapat
+        }
+    }
+
+    public void addRent(Rent rent) {
+        try {
+            connection = getConnection(); // Bağlantıyı aç
+            rent_repository = new Rent_Repository(connection);
+            rent_repository.addRent(rent);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(); // Bağlantıyı kapat
+        }
+    }
+
+    public void updateRent(Rent rent) {
+        try {
+            connection = getConnection(); // Bağlantıyı aç
+            rent_repository = new Rent_Repository(connection);
+            rent_repository.updateRent(rent);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(); // Bağlantıyı kapat
+        }
+    }
+
+    public void deleteRent(int id) {
+        try {
+            connection = getConnection(); // Bağlantıyı aç
+            rent_repository = new Rent_Repository(connection);
+            rent_repository.deleteRent(id);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            closeConnection(); // Bağlantıyı kapat
+        }
+    }
+
+    public List<Rent> getRentsByCustomerId(int customerId) {
+        try {
+            connection = getConnection(); // Bağlantıyı aç
+            rent_repository = new Rent_Repository(connection);
+            return rent_repository.getRentsByCustomerId(customerId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return new ArrayList<>();
+        } finally {
+            closeConnection(); // Bağlantıyı kapat
+        }
+    }
+
+    public void closeConnection() {
+        try {
+            if (connection != null && !connection.isClosed()) {
+                connection.close();
+                connection = null; // Bağlantı nesnesini sıfırla
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
